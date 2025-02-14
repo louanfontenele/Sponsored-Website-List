@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Website List</title>
+    <!-- TailwindCSS & DaisyUI via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@2.51.5/dist/full.css"
+      rel="stylesheet" />
+  </head>
+  <body class="bg-white text-black">
+    <nav class="p-4 border-b">
+      <a href="/" class="mr-4">Home</a>
+      <a href="/contact" class="mr-4">Contact</a>
+      <a href="/login">Admin</a>
+    </nav>
+    <div class="container mx-auto p-4">
+      <h1 class="text-2xl font-bold mb-4">Website List</h1>
+      <div class="tabs">
+        <button
+          class="tab tab-bordered tab-active"
+          onclick="showTab('brazil_portugal')">
+          Brazil & Portugal
+        </button>
+        <button class="tab tab-bordered" onclick="showTab('world')">
+          World Websites
+        </button>
+        <button class="tab tab-bordered" onclick="showTab('add_links')">
+          Add Links
+        </button>
+      </div>
+      <div id="table-container" class="mt-4 overflow-x-auto">
+        <table class="table w-full">
+          <thead>
+            <tr>
+              <th>Domain</th>
+              <th>D.A.</th>
+              <th>Gambling</th>
+              <th>Country</th>
+              <th>Links</th>
+              <th>Gambling Price</th>
+              <th>General Price</th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <!-- Dados carregados via JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <script>
+      function showTab(tab) {
+        fetch("/api/links?tab=" + tab)
+          .then((response) => response.json())
+          .then((data) => {
+            const tbody = document.getElementById("table-body");
+            tbody.innerHTML = "";
+            data.forEach((item) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+            <td><a href="http://${item.domain}" target="_blank" class="text-blue-500">${item.domain}</a></td>
+            <td>${item.da}</td>
+            <td>${item.gambling}</td>
+            <td>${item.country}</td>
+            <td>${item.links}</td>
+            <td>$${item.gambling_price}</td>
+            <td>$${item.general_price}</td>
+          `;
+              tbody.appendChild(row);
+            });
+          });
+      }
+      // Carrega a aba "Brazil & Portugal" por padrão
+      showTab("brazil_portugal");
+    </script>
+  </body>
+</html>

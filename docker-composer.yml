@@ -1,0 +1,8 @@
+services:
+  app:
+    build: .
+    volumes:
+      - ../files/app/AppName:/app/database
+
+volumes:
+  database:

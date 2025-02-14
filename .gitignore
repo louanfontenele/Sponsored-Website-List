@@ -128,3 +128,36 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+####
+
+# Node.js
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Arquivos de ambiente
+.env
+
+# Diretórios de build
+dist/
+build/
+
+# Diretórios temporários
+tmp/
+temp/
+
+# Arquivos de cache
+.cache/
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Banco de dados local (não versionar)
+database/database.db
+
+# Arquivos do Docker (local override, se houver)
+docker-compose.override.yml
