@@ -1,45 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <title>Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body class="bg-white text-black">
-    <nav class="p-4 border-b">
+    <nav class="p-4 border-b bg-gray-100">
       <a href="/" class="mr-4">Home</a>
       <a href="/contact" class="mr-4">Contact</a>
       <a href="/admin/users" class="mr-4">User Management</a>
     </nav>
     <div class="container mx-auto p-4">
       <h1 class="text-2xl font-bold mb-4">Admin Panel - Manage Links</h1>
-      <table class="table w-full mb-4">
-        <thead>
+      <table class="table w-full mb-4 border border-gray-300">
+        <thead class="bg-gray-100">
           <tr>
-            <th>Domain</th>
-            <th>D.A.</th>
-            <th>Gambling</th>
-            <th>Country</th>
-            <th>Links</th>
-            <th>Gambling Price</th>
-            <th>General Price</th>
-            <th>Tab</th>
-            <th>Actions</th>
+            <th class="border border-gray-300">Domain</th>
+            <th class="border border-gray-300">D.A.</th>
+            <th class="border border-gray-300">Gambling</th>
+            <th class="border border-gray-300">Country</th>
+            <th class="border border-gray-300">Links</th>
+            <th class="border border-gray-300">Gambling Price</th>
+            <th class="border border-gray-300">General Price</th>
+            <th class="border border-gray-300">Tab</th>
+            <th class="border border-gray-300">Actions</th>
           </tr>
         </thead>
         <tbody>
           <% links.forEach(link => { %>
           <tr>
-            <td><%= link.domain %></td>
-            <td><%= link.da %></td>
-            <td><%= link.gambling %></td>
-            <td><%= link.country %></td>
-            <td><%= link.links %></td>
-            <td>$<%= link.gambling_price %></td>
-            <td>$<%= link.general_price %></td>
-            <td><%= link.tab %></td>
-            <td>
-              <!-- Exemplo: botão para remover o link -->
+            <td class="border border-gray-300"><%= link.domain %></td>
+            <td class="border border-gray-300"><%= link.da %></td>
+            <td class="border border-gray-300"><%= link.gambling %></td>
+            <td class="border border-gray-300"><%= link.country %></td>
+            <td class="border border-gray-300"><%= link.links %></td>
+            <td class="border border-gray-300">$<%= link.gambling_price %></td>
+            <td class="border border-gray-300">$<%= link.general_price %></td>
+            <td class="border border-gray-300"><%= link.tab %></td>
+            <td class="border border-gray-300">
               <form
                 action="/admin/delete/<%= link.id %>"
                 method="POST"
@@ -48,7 +47,6 @@
                   Delete
                 </button>
               </form>
-              <!-- Botão para editar (pode ser aprimorado com modal ou redirecionamento para uma página de edição) -->
               <button
                 onclick="alert('Edit functionality for ID: <%= link.id %> to be implemented')"
                 class="bg-blue-500 text-white px-2 py-1">
@@ -78,7 +76,7 @@
             <input type="number" name="da" class="border p-2 w-full" required />
           </div>
           <div>
-            <label>Gambling (state: unchecked, check, x):</label>
+            <label>Gambling (unchecked, check, x):</label>
             <input
               type="text"
               name="gambling"

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <title>User Management</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body class="bg-white text-black">
-    <nav class="p-4 border-b">
+    <nav class="p-4 border-b bg-gray-100">
       <a href="/admin" class="mr-4">Back to Admin Panel</a>
       <a href="/" class="mr-4">Home</a>
     </nav>
@@ -14,20 +14,20 @@
       <h1 class="text-2xl font-bold mb-4">User Management</h1>
 
       <!-- Lista de usuários -->
-      <table class="table w-full mb-4">
-        <thead>
+      <table class="table w-full mb-4 border border-gray-300">
+        <thead class="bg-gray-100">
           <tr>
-            <th>ID</th>
-            <th>Username</th>
-            <th>Actions</th>
+            <th class="border border-gray-300">ID</th>
+            <th class="border border-gray-300">Username</th>
+            <th class="border border-gray-300">Actions</th>
           </tr>
         </thead>
         <tbody>
           <% users.forEach(user => { %>
           <tr>
-            <td><%= user.id %></td>
-            <td><%= user.username %></td>
-            <td>
+            <td class="border border-gray-300"><%= user.id %></td>
+            <td class="border border-gray-300"><%= user.username %></td>
+            <td class="border border-gray-300">
               <!-- Formulário para alterar a senha do usuário -->
               <form
                 action="/admin/users/edit/<%= user.id %>"
@@ -45,7 +45,7 @@
                   Change Password
                 </button>
               </form>
-              <!-- Botão para excluir usuário; a exclusão do 'admin' é bloqueada no backend -->
+              <!-- Botão para excluir (bloqueia se for admin via backend) -->
               <form
                 action="/admin/users/delete/<%= user.id %>"
                 method="POST"
@@ -62,7 +62,7 @@
         </tbody>
       </table>
 
-      <!-- Formulário para criar novo usuário -->
+      <!-- Form para criar novo usuário -->
       <h2 class="text-xl mb-2">Create New User</h2>
       <form
         action="/admin/users/add"

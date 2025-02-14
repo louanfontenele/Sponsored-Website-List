@@ -32,12 +32,12 @@ db.serialize(() => {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     domain TEXT,
     da INTEGER,
-    gambling TEXT,  -- Armazena 'unchecked', 'check' ou 'x'
+    gambling TEXT,  -- 'unchecked', 'check' ou 'x'
     country TEXT,
     links INTEGER,
     gambling_price REAL,
     general_price REAL,
-    tab TEXT       -- 'brazil_portugal', 'world' ou 'add_links'
+    tab TEXT        -- 'brazil_portugal', 'world' ou 'add_links'
   )`);
 
   // Seed do usuário admin com login "admin" e senha fixa
@@ -167,7 +167,7 @@ app.post("/admin/add", isAuthenticated, (req, res) => {
   );
 });
 
-// Editar link (exemplo simples - para implementar edição completa, pode-se criar uma rota GET para carregar os dados num formulário)
+// Editar link
 app.post("/admin/edit/:id", isAuthenticated, (req, res) => {
   const { id } = req.params;
   const {
@@ -236,7 +236,7 @@ app.get("/admin/users", isAuthenticated, (req, res) => {
   });
 });
 
-// Criar novo usuário (todos serão administradores por padrão)
+// Criar novo usuário
 app.post("/admin/users/add", isAuthenticated, async (req, res) => {
   const { username, password } = req.body;
   db.get(
@@ -264,7 +264,7 @@ app.post("/admin/users/add", isAuthenticated, async (req, res) => {
   );
 });
 
-// Excluir usuário (não permite excluir o usuário "admin")
+// Excluir usuário (não permite excluir "admin")
 app.post("/admin/users/delete/:id", isAuthenticated, (req, res) => {
   const userIdToDelete = req.params.id;
   db.get(
@@ -284,9 +284,6 @@ app.post("/admin/users/delete/:id", isAuthenticated, (req, res) => {
 });
 
 // Editar senha de um usuário
-// Regras:
-// - Se o usuário alvo for "admin", somente o próprio "admin" pode alterar a senha
-// - Usuários comuns podem alterar apenas a própria senha (ou outros, se o usuário logado for o admin)
 app.post("/admin/users/edit/:id", isAuthenticated, async (req, res) => {
   const userIdToEdit = req.params.id;
   const { newPassword } = req.body;
