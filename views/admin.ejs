@@ -7,6 +7,17 @@
     <link
       href="https://cdn.jsdelivr.net/npm/daisyui@2.51.5/dist/full.css"
       rel="stylesheet" />
+    <style>
+      /* Mesma regra para exibir X em checkboxes indeterminados com classe checkbox-error */
+      input[type="checkbox"].checkbox-error:indeterminate {
+        background-image: url('data:image/svg+xml;utf8,<svg fill="red" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>');
+        background-size: 16px 16px;
+        background-repeat: no-repeat;
+        background-position: center;
+        -webkit-appearance: none;
+        appearance: none;
+      }
+    </style>
   </head>
   <body class="bg-white text-black">
     <nav class="p-4 border-b bg-gray-100">
@@ -151,7 +162,6 @@
     </div>
 
     <script>
-      // Função para alternar o estado do checkbox de Gambling (no formulário de add)
       function cycleGamblingState() {
         const checkbox = document.getElementById("gamblingCheckbox");
         const hidden = document.getElementById("gamblingValue");
@@ -187,7 +197,7 @@
             tbody.innerHTML = "";
             data.forEach((item) => {
               const row = document.createElement("tr");
-              // Cria um checkbox desabilitado para Gambling com cores de acordo com o estado
+              // Cria um checkbox desabilitado para Gambling
               const cb = document.createElement("input");
               cb.type = "checkbox";
               cb.disabled = true;
@@ -195,9 +205,9 @@
                 cb.setAttribute("checked", "checked");
                 cb.className = "checkbox checkbox-success";
               } else if (item.gambling === "x") {
-                cb.setAttribute("checked", "checked");
-                cb.className = "checkbox checkbox-error";
+                // Para "x", não definimos o atributo checked; usamos apenas indeterminate e classe de erro.
                 cb.indeterminate = true;
+                cb.className = "checkbox checkbox-error";
               } else {
                 cb.className = "checkbox";
               }
