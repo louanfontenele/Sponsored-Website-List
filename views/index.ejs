@@ -23,7 +23,6 @@
     </nav>
     <div class="container mx-auto p-4 space-y-4">
       <h1 class="text-3xl font-bold">Website List</h1>
-
       <!-- Tabs -->
       <div class="tabs">
         <button
@@ -39,7 +38,6 @@
         </button>
         <button class="tab tab-bordered" onclick="filterByTab('')">All</button>
       </div>
-
       <!-- Search -->
       <div class="flex gap-2 mt-4">
         <input
@@ -49,17 +47,18 @@
           class="input input-bordered w-full max-w-xs" />
         <button onclick="searchLinks()" class="btn btn-primary">Search</button>
       </div>
-
       <!-- Tabela -->
       <div class="overflow-x-auto mt-4">
         <table class="table w-full border border-gray-300">
           <thead class="bg-gray-100">
             <tr>
-              <th colspan="2" class="text-center border">
+              <th colspan="2" class="text-center border p-2">
                 Website Information
               </th>
-              <th colspan="3" class="text-center border">Article Details</th>
-              <th colspan="2" class="text-center border">Price USD</th>
+              <th colspan="3" class="text-center border p-2">
+                Article Details
+              </th>
+              <th colspan="2" class="text-center border p-2">Price USD</th>
             </tr>
             <tr>
               <th class="border p-2">Domain</th>
@@ -104,21 +103,24 @@
             data.forEach((item) => {
               const row = document.createElement("tr");
               // Cria um checkbox desabilitado para Gambling
-              const gamblingCell = document.createElement("td");
-              gamblingCell.className = "border p-2";
               const cb = document.createElement("input");
               cb.type = "checkbox";
               cb.disabled = true;
               if (item.gambling === "check") {
                 cb.checked = true;
                 cb.indeterminate = false;
+                cb.className = "checkbox checkbox-success";
               } else if (item.gambling === "x") {
                 cb.checked = false;
                 cb.indeterminate = true;
+                cb.className = "checkbox checkbox-error";
               } else {
                 cb.checked = false;
                 cb.indeterminate = false;
+                cb.className = "checkbox";
               }
+              const gamblingCell = document.createElement("td");
+              gamblingCell.className = "border p-2";
               gamblingCell.appendChild(cb);
               row.innerHTML = `
               <td class="border p-2"><a href="http://${item.domain}" target="_blank" class="link link-primary">${item.domain}</a></td>
@@ -135,7 +137,7 @@
             });
           });
       }
-      // Carrega inicialmente com "All"
+      // Carrega inicialmente
       loadLinks();
     </script>
   </body>

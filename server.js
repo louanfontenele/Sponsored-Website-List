@@ -122,7 +122,7 @@ app.post("/login", (req, res) => {
   });
 });
 
-// Painel Admin – Exibe formulário de adicionar links e busca no topo e a lista abaixo
+// Painel Admin – Exibe formulário de adicionar links, busca e a lista
 app.get("/admin", isAuthenticated, (req, res) => {
   const { search, tab } = req.query;
   let sql = "SELECT * FROM links";
@@ -162,6 +162,8 @@ app.post("/admin/add", isAuthenticated, (req, res) => {
     tab,
     country,
   } = req.body;
+  // Garanta que o valor de gambling seja exatamente "unchecked", "check" ou "x"
+  gambling = gambling.trim();
   da = parseInt(da, 10);
   if (Number.isNaN(da)) return res.send("Erro: D.A. must be an integer.");
   linksCount = parseInt(linksCount, 10);
@@ -205,6 +207,7 @@ app.post("/admin/edit/:id", isAuthenticated, (req, res) => {
     general_price,
     tab,
   } = req.body;
+  gambling = gambling.trim();
   da = parseInt(da, 10);
   if (Number.isNaN(da)) return res.send("Erro: D.A. must be an integer.");
   linksCount = parseInt(linksCount, 10);
