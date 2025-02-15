@@ -32,12 +32,12 @@ db.serialize(() => {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     domain TEXT,
     da INTEGER,
-    gambling TEXT,  -- 'unchecked', 'check' ou 'x'
+    gambling TEXT,      -- 'unchecked', 'check' ou 'x'
     country TEXT,
     links INTEGER,
     gambling_price REAL,
     general_price REAL,
-    tab TEXT        -- 'brazil_portugal', 'world' ou 'add_links'
+    tab TEXT            -- 'brazil_portugal', 'world' ou 'add_links'
   )`);
 
   // Seed do usuário admin com login "admin" e senha fixa
@@ -86,6 +86,8 @@ app.use(
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+
+// Servir arquivos estáticos (CSS, JS, imagens, etc.)
 app.use(express.static(path.join(__dirname, "public")));
 
 // Middleware de autenticação
@@ -127,27 +129,56 @@ app.post("/login", (req, res) => {
   });
 });
 
-// Rota do Painel Admin para gerenciamento dos links
+// Rota do Painel Admin: lista + busca de links
 app.get("/admin", isAuthenticated, (req, res) => {
-  db.all("SELECT * FROM links", (err, rows) => {
+  const { search } = req.query;
+  let sql = "SELECT * FROM links";
+  const params = [];
+
+  // Se houver busca, filtra por domínio
+  if (search) {
+    sql += " WHERE domain LIKE ?";
+    params.push(`%${search}%`);
+  }
+
+  db.all(sql, params, (err, rows) => {
     if (err) return res.send("Erro ao buscar links.");
-    res.render("admin", { links: rows });
+    // Passa também o 'search' para manter o texto no campo
+    res.render("admin", { links: rows, search });
   });
 });
 
-// CRUD de Links (admin)
-// Adicionar link
+// CRUD de Links (admin) - Adicionar link
 app.post("/admin/add", isAuthenticated, (req, res) => {
-  const {
+  let {
     domain,
     da,
-    gambling,
-    country,
     links: linksCount,
     gambling_price,
     general_price,
     tab,
+    country,
+    gambling,
   } = req.body;
+
+  // Validações numéricas
+  da = parseInt(da, 10);
+  if (Number.isNaN(da)) {
+    return res.send("Erro: D.A. must be an integer.");
+  }
+  linksCount = parseInt(linksCount, 10);
+  if (Number.isNaN(linksCount)) {
+    return res.send("Erro: Links must be an integer.");
+  }
+  gambling_price = parseFloat(gambling_price);
+  if (Number.isNaN(gambling_price)) {
+    return res.send("Erro: Gambling Price must be a number.");
+  }
+  general_price = parseFloat(general_price);
+  if (Number.isNaN(general_price)) {
+    return res.send("Erro: General Price must be a number.");
+  }
+
   const stmt = db.prepare(`INSERT INTO links 
     (domain, da, gambling, country, links, gambling_price, general_price, tab)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`);
@@ -161,7 +192,7 @@ app.post("/admin/add", isAuthenticated, (req, res) => {
     general_price,
     tab,
     function (err) {
-      if (err) return res.send("Erro ao adicionar link.");
+      if (err) return res.send("Erro ao adicionar link: " + err.message);
       res.redirect("/admin");
     }
   );
@@ -170,7 +201,7 @@ app.post("/admin/add", isAuthenticated, (req, res) => {
 // Editar link
 app.post("/admin/edit/:id", isAuthenticated, (req, res) => {
   const { id } = req.params;
-  const {
+  let {
     domain,
     da,
     gambling,
@@ -180,8 +211,29 @@ app.post("/admin/edit/:id", isAuthenticated, (req, res) => {
     general_price,
     tab,
   } = req.body;
+
+  // Validações numéricas
+  da = parseInt(da, 10);
+  if (Number.isNaN(da)) {
+    return res.send("Erro: D.A. must be an integer.");
+  }
+  linksCount = parseInt(linksCount, 10);
+  if (Number.isNaN(linksCount)) {
+    return res.send("Erro: Links must be an integer.");
+  }
+  gambling_price = parseFloat(gambling_price);
+  if (Number.isNaN(gambling_price)) {
+    return res.send("Erro: Gambling Price must be a number.");
+  }
+  general_price = parseFloat(general_price);
+  if (Number.isNaN(general_price)) {
+    return res.send("Erro: General Price must be a number.");
+  }
+
   db.run(
-    `UPDATE links SET domain=?, da=?, gambling=?, country=?, links=?, gambling_price=?, general_price=?, tab=? WHERE id=?`,
+    `UPDATE links
+          SET domain=?, da=?, gambling=?, country=?, links=?, gambling_price=?, general_price=?, tab=?
+          WHERE id=?`,
     [
       domain,
       da,
@@ -194,7 +246,7 @@ app.post("/admin/edit/:id", isAuthenticated, (req, res) => {
       id,
     ],
     function (err) {
-      if (err) return res.send("Erro ao editar link.");
+      if (err) return res.send("Erro ao editar link: " + err.message);
       res.redirect("/admin");
     }
   );
@@ -209,11 +261,11 @@ app.post("/admin/delete/:id", isAuthenticated, (req, res) => {
   });
 });
 
-// API para carregar links filtrados por aba
+// API para carregar links filtrados por aba (usado na página inicial /)
 app.get("/api/links", (req, res) => {
   const { tab } = req.query;
   let query = "SELECT * FROM links";
-  let params = [];
+  const params = [];
   if (tab) {
     query += " WHERE tab = ?";
     params.push(tab);
@@ -232,7 +284,7 @@ app.get("/api/links", (req, res) => {
 app.get("/admin/users", isAuthenticated, (req, res) => {
   db.all("SELECT id, username FROM users", (err, users) => {
     if (err) return res.send("Erro ao buscar usuários.");
-    res.render("admin-users", { users, currentUserId: req.session.userId });
+    res.render("admin-users", { users });
   });
 });
 
