@@ -16,7 +16,7 @@ RUN chown -R appuser:appgroup /app
 # Copia o restante do projeto
 COPY . .
 
-# Declara o volume para persistência (no Dokploy, configure: ../files/app/AppName → /app/database)
+# Declara o volume para persistência (configure no Dokploy: ../files/app/AppName → /app/database)
 VOLUME ["/app/database"]
 
 # Usa o usuário não-root

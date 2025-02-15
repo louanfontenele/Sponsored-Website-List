@@ -71,19 +71,23 @@
         state = "check";
         checkbox.checked = true;
         checkbox.indeterminate = false;
+        checkbox.className = "checkbox checkbox-success";
+        label.textContent = "Checked";
       } else if (state === "check") {
         state = "x";
         checkbox.checked = false;
         checkbox.indeterminate = true;
+        checkbox.className = "checkbox checkbox-error";
+        label.textContent = "X";
       } else {
         state = "unchecked";
         checkbox.checked = false;
         checkbox.indeterminate = false;
+        checkbox.className = "checkbox";
+        label.textContent = "Unchecked";
       }
       hidden.value = state;
-      label.textContent = state === "unchecked" ? "Unchecked" : (state === "check" ? "Checked" : "X");
     }
-    // Inicializa o estado do checkbox na tela de edição
     (function initEditGamblingState() {
       const checkbox = document.getElementById('editGamblingCheckbox');
       const hidden = document.getElementById('editGamblingValue');
@@ -92,14 +96,17 @@
       if (state === "check") {
         checkbox.checked = true;
         checkbox.indeterminate = false;
+        checkbox.className = "checkbox checkbox-success";
         label.textContent = "Checked";
       } else if (state === "x") {
         checkbox.checked = false;
         checkbox.indeterminate = true;
+        checkbox.className = "checkbox checkbox-error";
         label.textContent = "X";
       } else {
         checkbox.checked = false;
         checkbox.indeterminate = false;
+        checkbox.className = "checkbox";
         label.textContent = "Unchecked";
       }
     })();

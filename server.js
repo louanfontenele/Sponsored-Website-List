@@ -1,4 +1,4 @@
-require("dotenv").config(); // Carrega as variáveis do .env
+require("dotenv").config(); // Carrega variáveis do .env
 
 const express = require("express");
 const session = require("express-session");
@@ -20,7 +20,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
   }
 });
 
-// Criação das tabelas e seed do usuário master usando .env
+// Criação das tabelas e seed do usuário master
 db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
