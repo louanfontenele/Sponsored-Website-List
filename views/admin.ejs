@@ -179,7 +179,6 @@
         hidden.value = state;
       }
 
-      // Função para carregar a lista de links (busca automática)
       function loadLinks(searchTerm = "") {
         fetch("/api/links?search=" + encodeURIComponent(searchTerm))
           .then((response) => response.json())
@@ -189,24 +188,21 @@
             data.forEach((item) => {
               const row = document.createElement("tr");
               // Cria um checkbox desabilitado para Gambling com cores de acordo com o estado
-              const gamblingCell = document.createElement("td");
-              gamblingCell.className = "border p-2";
               const cb = document.createElement("input");
               cb.type = "checkbox";
               cb.disabled = true;
               if (item.gambling === "check") {
-                cb.checked = true;
-                cb.indeterminate = false;
+                cb.setAttribute("checked", "checked");
                 cb.className = "checkbox checkbox-success";
               } else if (item.gambling === "x") {
-                cb.checked = false;
-                cb.indeterminate = true;
+                cb.setAttribute("checked", "checked");
                 cb.className = "checkbox checkbox-error";
+                cb.indeterminate = true;
               } else {
-                cb.checked = false;
-                cb.indeterminate = false;
                 cb.className = "checkbox";
               }
+              const gamblingCell = document.createElement("td");
+              gamblingCell.className = "border p-2";
               gamblingCell.appendChild(cb);
               row.innerHTML = `
               <td class="border p-2">${item.domain}</td>
@@ -235,19 +231,6 @@
         const searchTerm = document.getElementById("searchInput").value;
         loadLinks(searchTerm);
       }
-
-      // Debounce para busca automática
-      function debounce(func, delay) {
-        let timeout;
-        return function (...args) {
-          clearTimeout(timeout);
-          timeout = setTimeout(() => func.apply(this, args), delay);
-        };
-      }
-      const debouncedSearch = debounce(searchLinks, 300);
-      document
-        .getElementById("searchInput")
-        .addEventListener("input", debouncedSearch);
 
       // Carrega inicialmente
       loadLinks();
