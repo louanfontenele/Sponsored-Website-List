@@ -1,126 +1,138 @@
-# Website List Admin Panel 🚀
+# Website List Admin Panel (PHP) 🚀
 
-A modern, responsive web application built with **Node.js**, **Express**, **SQLite**, **EJS**, **TailwindCSS** & **DaisyUI**. This app displays a list of websites in a spreadsheet-like interface with tabs, search filtering, and an admin panel to create, edit, and delete records. It also includes user management (with a master admin defined in an `.env` file) and a Docker configuration for easy deployment and persistence.
+A modern, responsive web application built with **PHP** and **MySQL**, styled with **TailwindCSS** & **DaisyUI**. This project provides a spreadsheet-like interface for viewing website lists with filtering tabs and live search. It also features an admin panel for managing website records and users.
+
+> **Note:** This version is fully rewritten in PHP (no Node.js/EJS). It includes an installation wizard (`install.php`) that sets up your MySQL database and lets you configure the master user. An `install-lock` file is created afterward to prevent re‑installation.
 
 ## Features ✨
 
-- **Multi-Tab Interface**: Filter your website list by tabs (Brazil & Portugal, World Websites, Add Links, and All).
-- **Live Search**: Filter results automatically as you type! 🔍
+- **Installation Wizard**: Run `install.php` on first deployment to create your database tables and set your master user. An `install-lock` file prevents re‑installation.
+- **Responsive Layout**: Fully responsive and built with TailwindCSS & DaisyUI.
+- **Tabbed Interface & Live Search**: Filter your website list by tabs (Brazil & Portugal, World Websites, Add Links, All) and use live search to filter results as you type. 🔍
 - **Admin Panel**: Secure login and a modern dashboard for managing website records.
-- **User Management**: Create, edit, and delete users (master admin is protected).
-- **Tri-State Checkbox for Gambling**: Uses a disabled checkbox to show state with different colors (green for Checked, red for X, and default for Unchecked).
-- **Dockerized**: Easy deployment with Docker and data persistence using volume mapping.
+- **User Management**: Create, update, and delete users. The master user is protected.
+- **Gambling Checkbox**: Uses a disabled checkbox to display state:
+  - **Checked (green)** for state "check".
+  - **Indeterminate (red with X icon)** for state "x" (custom CSS shows a red X).
+  - **Unchecked** otherwise.
+- **API for AJAX Filtering**: Returns JSON for live search and filtering.
+- **Dockerized**: Easily deployable with Docker using volume mapping for data persistence.
 
 ## Prerequisites ✅
 
-- [Node.js (v18 or later)](https://nodejs.org/)
-- [Docker](https://www.docker.com/) (optional, for containerized deployment)
-- [Git](https://git-scm.com/)
+- **PHP 7.4+** (with PDO extension for MySQL)
+- **MySQL** database
+- A web server (e.g., Apache or Nginx)
+- [Composer](https://getcomposer.org/) (optional, for dependency management)
+
+> **Optional (for Docker users):** Docker
 
 ## Installation 🛠️
 
-1. **Clone the repository:**
+### 1. Clone the Repository
 
-   ```bash
-   git clone https://github.com/yourusername/YourRepoName.git
-   cd YourRepoName
-   ```
+```bash
+git clone https://github.com/yourusername/YourRepoName.git
+cd YourRepoName
+```
 
-2. **Install dependencies:**
+### 2. Configure Your Environment
 
-   ```bash
-   npm install
-   ```
+Create a file named `.env` in the project root with your master credentials:
 
-3. **Set up the environment variables:**  
-   Create a file named `.env` in the root directory with the following content (modify as needed):
+```ini
+MASTER_USERNAME=admin
+MASTER_PASSWORD=JgF%9f8&!8yuECtJ
+```
 
-   ```ini
-   MASTER_USERNAME=admin
-   MASTER_PASSWORD=JgF%9f8&!8yuECtJ
-   ```
+Update your MySQL credentials in `config.php`.
+
+### 3. Set Up Your Database
+
+Create a MySQL database with the name you specified in `config.php`.
+
+### 4. Run the Installation Wizard
+
+Open your browser and navigate to:
+
+```
+http://yourdomain/install.php
+```
+
+Follow the instructions to set up your master user. After successful installation, an `install-lock` file will be created to prevent re‑installation.
+
+---
 
 ## Running the Application 🚀
 
-### Running Locally (Without Docker)
+### Locally (Without Docker)
 
-1. **Start the server:**
+1. Configure your web server (Apache, Nginx, etc.) to serve the PHP files.
+2. Visit [http://localhost/index.php](http://localhost/index.php).
 
-   ```bash
-   npm start
-   ```
-
-2. **Access the application:**
-
-   - Public pages: [http://localhost:3000](http://localhost:3000)
-   - Admin panel: [http://localhost:3000/login](http://localhost:3000/login)
-
-### Running with Docker 🐳
+### With Docker 🐳
 
 1. **Build the Docker image:**
 
    ```bash
-   docker build -t website-list .
+   docker build -t website-list-php .
    ```
 
-2. **Run the container with volume mapping (to persist SQLite data):**
+2. **Run the container with volume mapping for persistence:**
 
    ```bash
-   docker run -d -p 3000:3000 -v ../files/app/AppName:/app/database --name website-list website-list
+   docker run -d -p 80:80 -v ../files/app/AppName:/app/database --name website-list-php website-list-php
    ```
 
-   > **Note:** Ensure that the host path (`../files/app/AppName`) exists and is accessible.
+   > **Note:** Adjust the volume mapping as needed.
 
-## Application Structure 📂
+---
+
+## Project Structure 📂
 
 ```
 YourRepoName/
-├── .env                 # Environment variables (master username & password)
-├── .gitignore           # Files/folders to ignore in Git
-├── Dockerfile           # Docker configuration for containerization
-├── package.json         # Node.js dependencies and scripts
-├── server.js            # Main server file (Express, SQLite, routing, etc.)
-├── database/            # SQLite database (persisted via volume)
-├── views/               # EJS templates for rendering pages
-│   ├── index.ejs      # Public page (list view with search & tabs)
-│   ├── contact.ejs    # Contact page
-│   ├── login.ejs      # Admin login page
-│   ├── admin.ejs      # Admin panel (add/search links, list view)
-│   ├── edit-link.ejs  # Edit link page
-│   └── admin-users.ejs# User management page (create/edit/delete users)
-└── public/              # Static assets (CSS, JS, images)
+├── config.php              # Database connection & session setup
+├── install.php             # Installation wizard for first-time setup
+├── install-lock            # File created after installation (prevents reinstall)
+├── index.php               # Public homepage with tabs and live search
+├── login.php               # Login page for the admin panel
+├── admin.php               # Main admin panel for managing links
+├── admin-edit.php          # Page for editing a link
+├── admin-edit-process.php  # Processes link edits
+├── admin-add-process.php   # Processes new link additions
+├── admin-delete.php        # Processes link deletions
+├── admin-users.php         # User management page
+├── admin-users-add.php     # Processes new user creation
+├── admin-users-edit.php    # Processes user password changes
+├── admin-users-delete.php  # Processes user deletions
+├── api-links.php           # Returns JSON for AJAX filtering/searching
+├── header.php              # Common header (navigation)
+├── footer.php              # Common footer
+├── .env                    # Environment variables (not in version control)
+├── .gitignore              # Git ignore rules
+└── README.md               # Project documentation
 ```
+
+---
 
 ## Usage 💡
 
 - **Public Interface:**  
-  Users can browse the website list, filter via tabs, and use the live search to find domains quickly.
+  View the website list, filter by tabs, and use live search.
 
 - **Admin Panel:**
-  - **Login:** Navigate to `/login` and use the credentials from your `.env` file.
-  - **Manage Links:** Add, edit, or delete website entries using the modern admin dashboard.
-  - **User Management:** Create, update, or remove users. The master admin (from `.env`) is protected and cannot be deleted or modified by others.
+  - **Login:** Navigate to `/login.php` and log in with your master credentials.
+  - **Manage Links:** Add, edit, or delete website records.
+  - **User Management:** Create, update, or delete users (the master user is protected).
 
-## UI/UX Highlights 🎨
-
-- **Modern Design:** Utilizes TailwindCSS & DaisyUI for a clean, professional look.
-- **Responsive Layout:** The application is fully responsive and works on all devices.
-- **Interactive Elements:** Tabs, live search, and dynamic checkboxes make for a user-friendly experience.
-
-## Troubleshooting ⚠️
-
-- **Data Persistence:**  
-  If data seems to be lost after redeploying, ensure you have correctly mapped the Docker volume (e.g., `-v ../files/app/AppName:/app/database`).
-
-- **Checkbox Issues:**  
-  If the disabled checkboxes are not displaying the correct state (especially for the "x" state), check that your browser supports the `indeterminate` property and that the CSS rule in your `index.ejs` and other files is in place.
-
-- **Environment Variables:**  
-  Double-check your `.env` file to ensure the master credentials are set properly.
+---
 
 ## Contributing 🤝
 
-Contributions are welcome! Feel free to open issues or submit pull requests for improvements, bug fixes, or new features.
+Contributions are welcome! Please open an issue or submit a pull request with improvements or bug fixes.
+
+---
 
 ## License 📄
 
@@ -129,5 +141,3 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ---
 
 Happy coding! 😄🚀
-
--
