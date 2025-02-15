@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Link</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white text-black">
+  <nav class="p-4 border-b bg-gray-100">
+    <a href="/admin" class="mr-4">Back to Admin Panel</a>
+    <a href="/" class="mr-4">Home</a>
+  </nav>
+  <div class="container mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-4">Edit Link</h1>
+    <form action="/admin/edit/<%= link.id %>" method="POST" class="bg-gray-100 p-4 rounded shadow">
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Domain -->
+        <div>
+          <label>Domain:</label>
+          <input type="text" name="domain" class="border p-2 w-full" value="<%= link.domain %>" required>
+        </div>
+        <!-- D.A. -->
+        <div>
+          <label>D.A.:</label>
+          <input type="number" name="da" step="1" class="border p-2 w-full" value="<%= link.da %>" required>
+        </div>
+        <!-- Gambling (Tri-state com emoji) -->
+        <div>
+          <label>Gambling:</label>
+          <div class="flex items-center">
+            <button type="button" id="editGamblingBtn" class="bg-gray-200 px-2 py-1"></button>
+            <input type="hidden" name="gambling" id="editGamblingValue" value="<%= link.gambling %>">
+          </div>
+        </div>
+        <!-- Country -->
+        <div>
+          <label>Country:</label>
+          <input type="text" name="country" class="border p-2 w-full" value="<%= link.country %>" required>
+        </div>
+        <!-- Links -->
+        <div>
+          <label>Links:</label>
+          <input type="number" name="links" step="1" class="border p-2 w-full" value="<%= link.links %>" required>
+        </div>
+        <!-- Gambling Price -->
+        <div>
+          <label>Gambling Price (USD):</label>
+          <input type="number" step="0.01" min="0" name="gambling_price" class="border p-2 w-full" value="<%= link.gambling_price %>" required>
+        </div>
+        <!-- General Price -->
+        <div>
+          <label>General Price (USD):</label>
+          <input type="number" step="0.01" min="0" name="general_price" class="border p-2 w-full" value="<%= link.general_price %>" required>
+        </div>
+        <!-- Tab (Dropdown) -->
+        <div>
+          <label>Tab:</label>
+          <select name="tab" class="border p-2 w-full" required>
+            <option value="brazil_portugal" <%= link.tab === 'brazil_portugal' ? 'selected' : '' %>>Brazil &amp; Portugal</option>
+            <option value="world" <%= link.tab === 'world' ? 'selected' : '' %>>World Websites</option>
+            <option value="add_links" <%= link.tab === 'add_links' ? 'selected' : '' %>>Add Links</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="mt-4 bg-green-500 text-white px-4 py-2">Save Changes</button>
+    </form>
+  </div>
+  <script>
+    const editGamblingBtn = document.getElementById('editGamblingBtn');
+    const editGamblingValue = document.getElementById('editGamblingValue');
+    const states = ["unchecked", "check", "x"];
+    const emojiMap = {
+      "unchecked": "⬜",
+      "check": "✅",
+      "x": "❌"
+    };
+    let currentState = editGamblingValue.value;
+    if (!states.includes(currentState)) { currentState = "unchecked"; }
+    editGamblingBtn.textContent = emojiMap[currentState];
+    editGamblingBtn.addEventListener('click', function() {
+      let index = states.indexOf(editGamblingValue.value);
+      index = (index + 1) % states.length;
+      const newState = states[index];
+      editGamblingValue.value = newState;
+      editGamblingBtn.textContent = emojiMap[newState];
+    });
+  </script>
+</body>
+</html>

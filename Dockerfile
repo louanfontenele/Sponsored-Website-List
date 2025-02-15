@@ -17,7 +17,7 @@ RUN chown -R appuser:appgroup /app
 COPY . .
 
 # Declara que /app/database é um volume (persistência)
-VOLUME ["/app/database"]
+VOLUME ["../files/app/Lists:/app/database"]
 
 # Usa o usuário não-root
 USER appuser

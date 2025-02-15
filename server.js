@@ -8,7 +8,7 @@ const path = require("path");
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Caminho do banco (persistido via volume)
+// IMPORTANTE: Configure o volume no Dokploy para mapear "../files/app/AppName" para "/app/database"
 const dbPath = path.join(__dirname, "database", "database.db");
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
@@ -27,7 +27,7 @@ db.serialize(() => {
     password TEXT
   )`);
 
-  // Tabela para os links (dados da lista)
+  // Tabela para os links
   db.run(`CREATE TABLE IF NOT EXISTS links (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     domain TEXT,
@@ -86,8 +86,6 @@ app.use(
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-
-// Servir arquivos estáticos (CSS, JS, imagens, etc.)
 app.use(express.static(path.join(__dirname, "public")));
 
 // Middleware de autenticação
@@ -129,25 +127,33 @@ app.post("/login", (req, res) => {
   });
 });
 
-// Rota do Painel Admin: lista + busca de links
+// Painel Admin: lista e busca de links
 app.get("/admin", isAuthenticated, (req, res) => {
   const { search } = req.query;
   let sql = "SELECT * FROM links";
   const params = [];
-
-  // Se houver busca, filtra por domínio
   if (search) {
     sql += " WHERE domain LIKE ?";
     params.push(`%${search}%`);
   }
-
   db.all(sql, params, (err, rows) => {
     if (err) return res.send("Erro ao buscar links.");
     res.render("admin", { links: rows, search });
   });
 });
 
-// CRUD de Links (admin) - Adicionar link
+// Tela de edição de um link
+app.get("/admin/edit/:id", isAuthenticated, (req, res) => {
+  const { id } = req.params;
+  db.get("SELECT * FROM links WHERE id = ?", [id], (err, link) => {
+    if (err || !link) {
+      return res.send("Link não encontrado.");
+    }
+    res.render("edit-link", { link });
+  });
+});
+
+// CRUD de Links - Adicionar link
 app.post("/admin/add", isAuthenticated, (req, res) => {
   let {
     domain,
@@ -159,25 +165,17 @@ app.post("/admin/add", isAuthenticated, (req, res) => {
     tab,
     country,
   } = req.body;
-
-  // Validações numéricas
   da = parseInt(da, 10);
-  if (Number.isNaN(da)) {
-    return res.send("Erro: D.A. must be an integer.");
-  }
+  if (Number.isNaN(da)) return res.send("Erro: D.A. must be an integer.");
   linksCount = parseInt(linksCount, 10);
-  if (Number.isNaN(linksCount)) {
+  if (Number.isNaN(linksCount))
     return res.send("Erro: Links must be an integer.");
-  }
   gambling_price = parseFloat(gambling_price);
-  if (Number.isNaN(gambling_price)) {
+  if (Number.isNaN(gambling_price))
     return res.send("Erro: Gambling Price must be a number.");
-  }
   general_price = parseFloat(general_price);
-  if (Number.isNaN(general_price)) {
+  if (Number.isNaN(general_price))
     return res.send("Erro: General Price must be a number.");
-  }
-
   const stmt = db.prepare(`INSERT INTO links 
     (domain, da, gambling, country, links, gambling_price, general_price, tab)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`);
@@ -197,7 +195,7 @@ app.post("/admin/add", isAuthenticated, (req, res) => {
   );
 });
 
-// Editar link
+// Processa a edição de um link
 app.post("/admin/edit/:id", isAuthenticated, (req, res) => {
   const { id } = req.params;
   let {
@@ -210,29 +208,19 @@ app.post("/admin/edit/:id", isAuthenticated, (req, res) => {
     general_price,
     tab,
   } = req.body;
-
-  // Validações numéricas
   da = parseInt(da, 10);
-  if (Number.isNaN(da)) {
-    return res.send("Erro: D.A. must be an integer.");
-  }
+  if (Number.isNaN(da)) return res.send("Erro: D.A. must be an integer.");
   linksCount = parseInt(linksCount, 10);
-  if (Number.isNaN(linksCount)) {
+  if (Number.isNaN(linksCount))
     return res.send("Erro: Links must be an integer.");
-  }
   gambling_price = parseFloat(gambling_price);
-  if (Number.isNaN(gambling_price)) {
+  if (Number.isNaN(gambling_price))
     return res.send("Erro: Gambling Price must be a number.");
-  }
   general_price = parseFloat(general_price);
-  if (Number.isNaN(general_price)) {
+  if (Number.isNaN(general_price))
     return res.send("Erro: General Price must be a number.");
-  }
-
   db.run(
-    `UPDATE links
-          SET domain=?, da=?, gambling=?, country=?, links=?, gambling_price=?, general_price=?, tab=?
-          WHERE id=?`,
+    `UPDATE links SET domain=?, da=?, gambling=?, country=?, links=?, gambling_price=?, general_price=?, tab=? WHERE id=?`,
     [
       domain,
       da,
@@ -260,7 +248,7 @@ app.post("/admin/delete/:id", isAuthenticated, (req, res) => {
   });
 });
 
-// API para carregar links filtrados por aba (usado na página inicial /)
+// API para carregar links filtrados por aba (usado na página inicial)
 app.get("/api/links", (req, res) => {
   const { tab } = req.query;
   let query = "SELECT * FROM links";
@@ -275,11 +263,7 @@ app.get("/api/links", (req, res) => {
   });
 });
 
-// ----------------------
 // Gerenciamento de Usuários
-// ----------------------
-
-// Página de gerenciamento de usuários
 app.get("/admin/users", isAuthenticated, (req, res) => {
   db.all("SELECT id, username FROM users", (err, users) => {
     if (err) return res.send("Erro ao buscar usuários.");
@@ -287,7 +271,6 @@ app.get("/admin/users", isAuthenticated, (req, res) => {
   });
 });
 
-// Criar novo usuário
 app.post("/admin/users/add", isAuthenticated, async (req, res) => {
   const { username, password } = req.body;
   db.get(
@@ -315,7 +298,6 @@ app.post("/admin/users/add", isAuthenticated, async (req, res) => {
   );
 });
 
-// Excluir usuário (não permite excluir "admin")
 app.post("/admin/users/delete/:id", isAuthenticated, (req, res) => {
   const userIdToDelete = req.params.id;
   db.get(
@@ -334,19 +316,16 @@ app.post("/admin/users/delete/:id", isAuthenticated, (req, res) => {
   );
 });
 
-// Editar senha de um usuário
 app.post("/admin/users/edit/:id", isAuthenticated, async (req, res) => {
   const userIdToEdit = req.params.id;
   const { newPassword } = req.body;
   const currentUserId = req.session.userId;
-
   db.get(
     "SELECT username FROM users WHERE id = ?",
     [userIdToEdit],
     (err, row) => {
       if (!row) return res.redirect("/admin/users?error=UserNotFound");
       const targetUsername = row.username;
-
       db.get(
         "SELECT username FROM users WHERE id = ?",
         [currentUserId],
@@ -354,12 +333,9 @@ app.post("/admin/users/edit/:id", isAuthenticated, async (req, res) => {
           if (!currentUserRow)
             return res.redirect("/admin/users?error=InvalidSession");
           const currentUsername = currentUserRow.username;
-
-          // Bloqueia alteração da senha do usuário "admin" por outro usuário
           if (targetUsername === "admin" && currentUsername !== "admin") {
             return res.redirect("/admin/users?error=CannotEditAdminPassword");
           }
-
           try {
             const hashedPassword = await bcrypt.hash(newPassword, 10);
             db.run(
@@ -379,7 +355,6 @@ app.post("/admin/users/edit/:id", isAuthenticated, async (req, res) => {
   );
 });
 
-// Inicializa o servidor
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
 });

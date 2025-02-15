@@ -13,8 +13,7 @@
     </nav>
     <div class="container mx-auto p-4">
       <h1 class="text-2xl font-bold mb-4">Admin Panel - Manage Links</h1>
-
-      <!-- Form de busca por domínio -->
+      <!-- Busca por domínio -->
       <form method="GET" action="/admin" class="mb-4">
         <input
           type="text"
@@ -24,7 +23,6 @@
           class="border p-2" />
         <button type="submit" class="bg-gray-200 px-2 py-1">Search</button>
       </form>
-
       <table class="table w-full mb-4 border border-gray-300">
         <thead class="bg-gray-100">
           <tr>
@@ -51,7 +49,6 @@
             <td class="border border-gray-300">$<%= link.general_price %></td>
             <td class="border border-gray-300"><%= link.tab %></td>
             <td class="border border-gray-300">
-              <!-- Remover link -->
               <form
                 action="/admin/delete/<%= link.id %>"
                 method="POST"
@@ -60,18 +57,16 @@
                   Delete
                 </button>
               </form>
-              <!-- Botão de edição (placeholder para implementação) -->
-              <button
-                onclick="alert('Edit functionality for ID: <%= link.id %> to be implemented')"
-                class="bg-blue-500 text-white px-2 py-1">
-                Edit
-              </button>
+              <a
+                href="/admin/edit/<%= link.id %>"
+                class="bg-blue-500 text-white px-2 py-1 inline-block"
+                >Edit</a
+              >
             </td>
           </tr>
           <% }) %>
         </tbody>
       </table>
-
       <h2 class="text-xl mb-2">Add New Link</h2>
       <form
         action="/admin/add"
@@ -87,7 +82,7 @@
               class="border p-2 w-full"
               required />
           </div>
-          <!-- D.A. (somente números inteiros) -->
+          <!-- D.A. -->
           <div>
             <label>D.A.:</label>
             <input
@@ -97,11 +92,16 @@
               class="border p-2 w-full"
               required />
           </div>
-          <!-- Gambling (Checkbox tri-state) -->
+          <!-- Gambling (Tri-state com emoji) -->
           <div>
             <label>Gambling:</label>
             <div class="flex items-center">
-              <input type="checkbox" id="gamblingCheckbox" />
+              <button
+                type="button"
+                id="gamblingButton"
+                class="bg-gray-200 px-2 py-1">
+                ⬜
+              </button>
               <input
                 type="hidden"
                 name="gambling"
@@ -118,7 +118,7 @@
               class="border p-2 w-full"
               required />
           </div>
-          <!-- Links (somente inteiros) -->
+          <!-- Links -->
           <div>
             <label>Links:</label>
             <input
@@ -128,7 +128,7 @@
               class="border p-2 w-full"
               required />
           </div>
-          <!-- Gambling Price (números decimais) -->
+          <!-- Gambling Price -->
           <div>
             <label>Gambling Price (USD):</label>
             <input
@@ -139,7 +139,7 @@
               class="border p-2 w-full"
               required />
           </div>
-          <!-- General Price (números decimais) -->
+          <!-- General Price -->
           <div>
             <label>General Price (USD):</label>
             <input
@@ -165,35 +165,23 @@
         </button>
       </form>
     </div>
-
     <script>
-      // Implementa um checkbox tri-state usando o input type="checkbox"
-      const gamblingCheckbox = document.getElementById("gamblingCheckbox");
+      // Tri-state para o botão Gambling com emoji
+      const gamblingButton = document.getElementById("gamblingButton");
       const gamblingValue = document.getElementById("gamblingValue");
-      // Estado inicial: unchecked
-      gamblingCheckbox.checked = false;
-      gamblingCheckbox.indeterminate = false;
-
-      gamblingCheckbox.addEventListener("click", function (e) {
-        // Se não estiver marcado e não estiver em estado indeterminado, seta para checked ("check")
-        if (!gamblingCheckbox.checked && !gamblingCheckbox.indeterminate) {
-          gamblingCheckbox.checked = true;
-          gamblingCheckbox.indeterminate = false;
-          gamblingValue.value = "check";
-        } else if (
-          gamblingCheckbox.checked &&
-          !gamblingCheckbox.indeterminate
-        ) {
-          // Se estiver marcado, seta para indeterminado ("x")
-          gamblingCheckbox.checked = false;
-          gamblingCheckbox.indeterminate = true;
-          gamblingValue.value = "x";
-        } else {
-          // Se estiver em estado indeterminado, reseta para unchecked
-          gamblingCheckbox.checked = false;
-          gamblingCheckbox.indeterminate = false;
-          gamblingValue.value = "unchecked";
-        }
+      const states = ["unchecked", "check", "x"];
+      const emojiMap = {
+        unchecked: "⬜",
+        check: "✅",
+        x: "❌",
+      };
+      gamblingButton.textContent = emojiMap[gamblingValue.value];
+      gamblingButton.addEventListener("click", function () {
+        let index = states.indexOf(gamblingValue.value);
+        index = (index + 1) % states.length;
+        const newState = states[index];
+        gamblingValue.value = newState;
+        gamblingButton.textContent = emojiMap[newState];
       });
     </script>
   </body>
