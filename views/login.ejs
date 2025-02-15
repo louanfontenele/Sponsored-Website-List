@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <title>Admin Login</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@2.51.5/dist/full.css"
+      rel="stylesheet" />
   </head>
   <body class="bg-white text-black flex items-center justify-center h-screen">
     <div class="w-full max-w-sm">
@@ -16,7 +19,7 @@
         method="POST"
         class="bg-gray-100 p-6 rounded shadow">
         <div class="mb-4">
-          <label class="block mb-1">Username</label>
+          <label class="label">Username</label>
           <input
             type="text"
             name="username"
@@ -24,7 +27,7 @@
             required />
         </div>
         <div class="mb-4">
-          <label class="block mb-1">Password</label>
+          <label class="label">Password</label>
           <input
             type="password"
             name="password"

@@ -10,7 +10,7 @@ const path = require("path");
 const app = express();
 const port = process.env.PORT || 3000;
 
-// IMPORTANTE: Certifique-se de que no Dokploy o volume seja mapeado: ../files/app/AppName → /app/database
+// IMPORTANTE: Configure o volume no Dokploy para mapear "../files/app/AppName" para "/app/database"
 const dbPath = path.join(__dirname, "database", "database.db");
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) {
@@ -20,7 +20,7 @@ const db = new sqlite3.Database(dbPath, (err) => {
   }
 });
 
-// Criação das tabelas e seed do usuário master (admin) usando .env
+// Criação das tabelas e seed do usuário master usando .env
 db.serialize(() => {
   db.run(`CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -32,12 +32,12 @@ db.serialize(() => {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     domain TEXT,
     da INTEGER,
-    gambling TEXT,      -- 'unchecked', 'check' ou 'x'
+    gambling TEXT,      -- "unchecked", "check" ou "x"
     country TEXT,
     links INTEGER,
     gambling_price REAL,
     general_price REAL,
-    tab TEXT            -- 'brazil_portugal', 'world' ou 'add_links'
+    tab TEXT            -- "brazil_portugal", "world" ou "add_links"
   )`);
 
   const masterUser = process.env.MASTER_USERNAME || "admin";
@@ -122,18 +122,22 @@ app.post("/login", (req, res) => {
   });
 });
 
-// Painel Admin – Exibe o formulário de adicionar e busca no topo, e a lista abaixo
+// Painel Admin – Exibe formulário de adicionar links e busca no topo e a lista abaixo
 app.get("/admin", isAuthenticated, (req, res) => {
-  const { search } = req.query;
+  const { search, tab } = req.query;
   let sql = "SELECT * FROM links";
   const params = [];
+  if (tab) {
+    sql += " WHERE tab = ?";
+    params.push(tab);
+  }
   if (search) {
-    sql += " WHERE domain LIKE ?";
+    sql += (params.length ? " AND" : " WHERE") + " domain LIKE ?";
     params.push(`%${search}%`);
   }
   db.all(sql, params, (err, rows) => {
     if (err) return res.send("Erro ao buscar links.");
-    res.render("admin", { links: rows, search });
+    res.render("admin", { links: rows, search, tab });
   });
 });
 
@@ -146,7 +150,7 @@ app.get("/admin/edit/:id", isAuthenticated, (req, res) => {
   });
 });
 
-// CRUD de Links – Adicionar
+// CRUD de Links – Adicionar link
 app.post("/admin/add", isAuthenticated, (req, res) => {
   let {
     domain,
@@ -241,7 +245,7 @@ app.post("/admin/delete/:id", isAuthenticated, (req, res) => {
   });
 });
 
-// API para carregar links filtrados por aba (para o index)
+// API para carregar links (usado no index)
 app.get("/api/links", (req, res) => {
   const { tab, search } = req.query;
   let query = "SELECT * FROM links";

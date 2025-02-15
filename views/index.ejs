@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>Website List</title>
-    <!-- TailwindCSS & DaisyUI via CDN -->
+    <!-- TailwindCSS & DaisyUI -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       href="https://cdn.jsdelivr.net/npm/daisyui@2.51.5/dist/full.css"
@@ -21,11 +21,27 @@
         </div>
       </div>
     </nav>
-    <div class="container mx-auto p-4">
-      <h1 class="text-3xl font-bold mb-6">Website List</h1>
+    <div class="container mx-auto p-4 space-y-4">
+      <h1 class="text-3xl font-bold">Website List</h1>
 
-      <!-- Search field -->
-      <div class="mb-4 flex gap-2">
+      <!-- Tabs -->
+      <div class="tabs">
+        <button
+          class="tab tab-bordered"
+          onclick="filterByTab('brazil_portugal')">
+          Brazil & Portugal
+        </button>
+        <button class="tab tab-bordered" onclick="filterByTab('world')">
+          World Websites
+        </button>
+        <button class="tab tab-bordered" onclick="filterByTab('add_links')">
+          Add Links
+        </button>
+        <button class="tab tab-bordered" onclick="filterByTab('')">All</button>
+      </div>
+
+      <!-- Search -->
+      <div class="flex gap-2 mt-4">
         <input
           id="searchInput"
           type="text"
@@ -34,28 +50,25 @@
         <button onclick="searchLinks()" class="btn btn-primary">Search</button>
       </div>
 
-      <div class="overflow-x-auto">
+      <!-- Tabela -->
+      <div class="overflow-x-auto mt-4">
         <table class="table w-full border border-gray-300">
           <thead class="bg-gray-100">
             <tr>
-              <th colspan="2" class="text-center border border-gray-300">
+              <th colspan="2" class="text-center border">
                 Website Information
               </th>
-              <th colspan="3" class="text-center border border-gray-300">
-                Article Details
-              </th>
-              <th colspan="2" class="text-center border border-gray-300">
-                Price USD
-              </th>
+              <th colspan="3" class="text-center border">Article Details</th>
+              <th colspan="2" class="text-center border">Price USD</th>
             </tr>
             <tr>
-              <th class="border border-gray-300">Domain</th>
-              <th class="border border-gray-300">D.A.</th>
-              <th class="border border-gray-300">Gambling</th>
-              <th class="border border-gray-300">Country</th>
-              <th class="border border-gray-300">Links</th>
-              <th class="border border-gray-300">Gambling Price</th>
-              <th class="border border-gray-300">General Price</th>
+              <th class="border p-2">Domain</th>
+              <th class="border p-2">D.A.</th>
+              <th class="border p-2">Gambling</th>
+              <th class="border p-2">Country</th>
+              <th class="border p-2">Links</th>
+              <th class="border p-2">Gambling Price</th>
+              <th class="border p-2">General Price</th>
             </tr>
           </thead>
           <tbody id="table-body" class="bg-white">
@@ -66,60 +79,64 @@
     </div>
 
     <script>
-      function searchLinks() {
-        const search = document.getElementById("searchInput").value;
-        // Chama a função showLinks com o termo de busca
-        showLinks(search);
+      let currentTab = "";
+      function filterByTab(tab) {
+        currentTab = tab;
+        loadLinks();
       }
-      function showLinks(searchTerm = "") {
-        fetch("/api/links?search=" + encodeURIComponent(searchTerm))
+      function searchLinks() {
+        loadLinks();
+      }
+      function loadLinks() {
+        const searchTerm = document.getElementById("searchInput").value;
+        let url = "/api/links?";
+        if (currentTab) {
+          url += "tab=" + encodeURIComponent(currentTab) + "&";
+        }
+        if (searchTerm) {
+          url += "search=" + encodeURIComponent(searchTerm);
+        }
+        fetch(url)
           .then((response) => response.json())
           .then((data) => {
             const tbody = document.getElementById("table-body");
             tbody.innerHTML = "";
             data.forEach((item) => {
               const row = document.createElement("tr");
-              // Cria um checkbox desabilitado para Gambling, com data-state
+              // Cria um checkbox desabilitado para Gambling
               const gamblingCell = document.createElement("td");
-              gamblingCell.className = "border border-gray-300";
-              const checkbox = document.createElement("input");
-              checkbox.type = "checkbox";
-              checkbox.disabled = true;
-              checkbox.className = "gambling-checkbox";
-              checkbox.dataset.state = item.gambling;
-              gamblingCell.appendChild(checkbox);
+              gamblingCell.className = "border p-2";
+              const cb = document.createElement("input");
+              cb.type = "checkbox";
+              cb.disabled = true;
+              if (item.gambling === "check") {
+                cb.checked = true;
+                cb.indeterminate = false;
+              } else if (item.gambling === "x") {
+                cb.checked = false;
+                cb.indeterminate = true;
+              } else {
+                cb.checked = false;
+                cb.indeterminate = false;
+              }
+              gamblingCell.appendChild(cb);
               row.innerHTML = `
-              <td class="border border-gray-300"><a href="http://${item.domain}" target="_blank" class="text-blue-500">${item.domain}</a></td>
-              <td class="border border-gray-300">${item.da}</td>
+              <td class="border p-2"><a href="http://${item.domain}" target="_blank" class="link link-primary">${item.domain}</a></td>
+              <td class="border p-2">${item.da}</td>
             `;
               row.appendChild(gamblingCell);
               row.innerHTML += `
-              <td class="border border-gray-300">${item.country}</td>
-              <td class="border border-gray-300">${item.links}</td>
-              <td class="border border-gray-300">$${item.gambling_price}</td>
-              <td class="border border-gray-300">$${item.general_price}</td>
+              <td class="border p-2">${item.country}</td>
+              <td class="border p-2">${item.links}</td>
+              <td class="border p-2">$${item.gambling_price}</td>
+              <td class="border p-2">$${item.general_price}</td>
             `;
               tbody.appendChild(row);
             });
-            // Atualiza o estado dos checkboxes
-            document
-              .querySelectorAll(".gambling-checkbox")
-              .forEach((checkbox) => {
-                const state = checkbox.dataset.state;
-                if (state === "check") {
-                  checkbox.checked = true;
-                } else if (state === "x") {
-                  checkbox.checked = false;
-                  checkbox.indeterminate = true;
-                } else {
-                  checkbox.checked = false;
-                  checkbox.indeterminate = false;
-                }
-              });
           });
       }
-      // Carrega inicialmente
-      showLinks();
+      // Carrega inicialmente com "All"
+      loadLinks();
     </script>
   </body>
 </html>

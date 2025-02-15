@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <title>Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/daisyui@2.51.5/dist/full.css"
+      rel="stylesheet" />
   </head>
   <body class="bg-white text-black">
     <nav class="p-4 border-b bg-gray-100">
@@ -46,9 +49,14 @@
             <div>
               <label class="label">Gambling:</label>
               <div class="flex items-center gap-2">
-                <button type="button" id="gamblingButton" class="btn btn-ghost">
-                  ⬜
-                </button>
+                <input
+                  type="checkbox"
+                  id="gamblingCheckbox"
+                  onclick="cycleGamblingState()"
+                  class="checkbox" />
+                <span id="gamblingStateLabel" class="font-semibold"
+                  >Unchecked</span
+                >
                 <input
                   type="hidden"
                   name="gambling"
@@ -96,7 +104,7 @@
             <div>
               <label class="label">Tab:</label>
               <select name="tab" class="select select-bordered w-full" required>
-                <option value="brazil_portugal">Brazil &amp; Portugal</option>
+                <option value="brazil_portugal">Brazil & Portugal</option>
                 <option value="world">World Websites</option>
                 <option value="add_links">Add Links</option>
               </select>
@@ -124,15 +132,15 @@
         <table class="table w-full">
           <thead class="bg-gray-100">
             <tr>
-              <th class="border">Domain</th>
-              <th class="border">D.A.</th>
-              <th class="border">Gambling</th>
-              <th class="border">Country</th>
-              <th class="border">Links</th>
-              <th class="border">Gambling Price</th>
-              <th class="border">General Price</th>
-              <th class="border">Tab</th>
-              <th class="border">Actions</th>
+              <th class="border p-2">Domain</th>
+              <th class="border p-2">D.A.</th>
+              <th class="border p-2">Gambling</th>
+              <th class="border p-2">Country</th>
+              <th class="border p-2">Links</th>
+              <th class="border p-2">Gambling Price</th>
+              <th class="border p-2">General Price</th>
+              <th class="border p-2">Tab</th>
+              <th class="border p-2">Actions</th>
             </tr>
           </thead>
           <tbody id="linkTableBody">
@@ -143,25 +151,34 @@
     </div>
 
     <script>
-      // Tri-state para botão Gambling no form de add
-      const gamblingButton = document.getElementById("gamblingButton");
-      const gamblingValue = document.getElementById("gamblingValue");
-      const states = ["unchecked", "check", "x"];
-      const emojiMap = {
-        unchecked: "⬜",
-        check: "✅",
-        x: "❌",
-      };
-      gamblingButton.textContent = emojiMap[gamblingValue.value];
-      gamblingButton.addEventListener("click", function () {
-        let index = states.indexOf(gamblingValue.value);
-        index = (index + 1) % states.length;
-        const newState = states[index];
-        gamblingValue.value = newState;
-        gamblingButton.textContent = emojiMap[newState];
-      });
+      // Tri-state usando checkbox nativo para "Gambling" no form de add
+      function cycleGamblingState() {
+        const checkbox = document.getElementById("gamblingCheckbox");
+        const hidden = document.getElementById("gamblingValue");
+        const label = document.getElementById("gamblingStateLabel");
+        let state = hidden.value;
+        if (state === "unchecked") {
+          state = "check";
+          checkbox.checked = true;
+          checkbox.indeterminate = false;
+        } else if (state === "check") {
+          state = "x";
+          checkbox.checked = false;
+          checkbox.indeterminate = true;
+        } else {
+          state = "unchecked";
+          checkbox.checked = false;
+          checkbox.indeterminate = false;
+        }
+        hidden.value = state;
+        label.textContent =
+          state === "unchecked"
+            ? "Unchecked"
+            : state === "check"
+            ? "Checked"
+            : "X";
+      }
 
-      // Função para carregar a lista de links (usada na busca do admin)
       function loadLinks(searchTerm = "") {
         fetch("/api/links?search=" + encodeURIComponent(searchTerm))
           .then((response) => response.json())
@@ -170,16 +187,21 @@
             tbody.innerHTML = "";
             data.forEach((item) => {
               const row = document.createElement("tr");
-              // Cria checkbox para Gambling (estático)
+              // Cria um checkbox desabilitado para Gambling
               const gamblingCell = document.createElement("td");
+              gamblingCell.className = "border p-2";
               const cb = document.createElement("input");
               cb.type = "checkbox";
               cb.disabled = true;
-              cb.dataset.state = item.gambling;
               if (item.gambling === "check") {
                 cb.checked = true;
+                cb.indeterminate = false;
               } else if (item.gambling === "x") {
+                cb.checked = false;
                 cb.indeterminate = true;
+              } else {
+                cb.checked = false;
+                cb.indeterminate = false;
               }
               gamblingCell.appendChild(cb);
               row.innerHTML = `
@@ -202,22 +224,6 @@
             `;
               tbody.appendChild(row);
             });
-            // Atualiza os checkboxes
-            document
-              .querySelectorAll('input[type="checkbox"][data-state]')
-              .forEach((cb) => {
-                const state = cb.dataset.state;
-                if (state === "check") {
-                  cb.checked = true;
-                  cb.indeterminate = false;
-                } else if (state === "x") {
-                  cb.checked = false;
-                  cb.indeterminate = true;
-                } else {
-                  cb.checked = false;
-                  cb.indeterminate = false;
-                }
-              });
           });
       }
       function searchLinks() {
