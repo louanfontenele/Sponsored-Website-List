@@ -13,11 +13,11 @@ RUN npm install
 RUN mkdir -p /app/database
 RUN chown -R appuser:appgroup /app
 
-# Copia todo o resto do projeto
+# Copia o restante do projeto
 COPY . .
 
-# Declara que /app/database é um volume (persistência)
-VOLUME ["../files/app/Lists:/app/database"]
+# Declara o volume para persistência (no Dokploy, configure: ../files/app/AppName → /app/database)
+VOLUME ["/app/database"]
 
 # Usa o usuário não-root
 USER appuser

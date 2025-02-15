@@ -7,169 +7,146 @@
   </head>
   <body class="bg-white text-black">
     <nav class="p-4 border-b bg-gray-100">
-      <a href="/" class="mr-4">Home</a>
-      <a href="/contact" class="mr-4">Contact</a>
-      <a href="/admin/users" class="mr-4">User Management</a>
+      <div class="container mx-auto flex justify-between">
+        <div>
+          <a href="/" class="mr-4 font-bold">Home</a>
+          <a href="/contact" class="mr-4">Contact</a>
+        </div>
+        <div>
+          <a href="/admin/users" class="btn btn-sm btn-outline mr-2"
+            >User Management</a
+          >
+          <a href="/login" class="btn btn-sm btn-outline">Logout</a>
+        </div>
+      </div>
     </nav>
-    <div class="container mx-auto p-4">
-      <h1 class="text-2xl font-bold mb-4">Admin Panel - Manage Links</h1>
-      <!-- Busca por domínio -->
-      <form method="GET" action="/admin" class="mb-4">
-        <input
-          type="text"
-          name="search"
-          value="<%= search || '' %>"
-          placeholder="Search by domain"
-          class="border p-2" />
-        <button type="submit" class="bg-gray-200 px-2 py-1">Search</button>
-      </form>
-      <table class="table w-full mb-4 border border-gray-300">
-        <thead class="bg-gray-100">
-          <tr>
-            <th class="border border-gray-300">Domain</th>
-            <th class="border border-gray-300">D.A.</th>
-            <th class="border border-gray-300">Gambling</th>
-            <th class="border border-gray-300">Country</th>
-            <th class="border border-gray-300">Links</th>
-            <th class="border border-gray-300">Gambling Price</th>
-            <th class="border border-gray-300">General Price</th>
-            <th class="border border-gray-300">Tab</th>
-            <th class="border border-gray-300">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% links.forEach(link => { %>
-          <tr>
-            <td class="border border-gray-300"><%= link.domain %></td>
-            <td class="border border-gray-300"><%= link.da %></td>
-            <td class="border border-gray-300"><%= link.gambling %></td>
-            <td class="border border-gray-300"><%= link.country %></td>
-            <td class="border border-gray-300"><%= link.links %></td>
-            <td class="border border-gray-300">$<%= link.gambling_price %></td>
-            <td class="border border-gray-300">$<%= link.general_price %></td>
-            <td class="border border-gray-300"><%= link.tab %></td>
-            <td class="border border-gray-300">
-              <form
-                action="/admin/delete/<%= link.id %>"
-                method="POST"
-                style="display: inline">
-                <button class="bg-red-500 text-white px-2 py-1" type="submit">
-                  Delete
-                </button>
-              </form>
-              <a
-                href="/admin/edit/<%= link.id %>"
-                class="bg-blue-500 text-white px-2 py-1 inline-block"
-                >Edit</a
-              >
-            </td>
-          </tr>
-          <% }) %>
-        </tbody>
-      </table>
-      <h2 class="text-xl mb-2">Add New Link</h2>
-      <form
-        action="/admin/add"
-        method="POST"
-        class="bg-gray-100 p-4 rounded shadow">
-        <div class="grid grid-cols-2 gap-4">
-          <!-- Domain -->
-          <div>
-            <label>Domain:</label>
-            <input
-              type="text"
-              name="domain"
-              class="border p-2 w-full"
-              required />
-          </div>
-          <!-- D.A. -->
-          <div>
-            <label>D.A.:</label>
-            <input
-              type="number"
-              name="da"
-              step="1"
-              class="border p-2 w-full"
-              required />
-          </div>
-          <!-- Gambling (Tri-state com emoji) -->
-          <div>
-            <label>Gambling:</label>
-            <div class="flex items-center">
-              <button
-                type="button"
-                id="gamblingButton"
-                class="bg-gray-200 px-2 py-1">
-                ⬜
-              </button>
+    <div class="container mx-auto p-4 space-y-6">
+      <!-- Card de Adicionar e Buscar -->
+      <div class="card bg-base-200 shadow-lg p-4">
+        <h2 class="card-title mb-4">Add New Link</h2>
+        <form action="/admin/add" method="POST" class="space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="label">Domain:</label>
               <input
-                type="hidden"
-                name="gambling"
-                id="gamblingValue"
-                value="unchecked" />
+                type="text"
+                name="domain"
+                class="input input-bordered w-full"
+                required />
+            </div>
+            <div>
+              <label class="label">D.A.:</label>
+              <input
+                type="number"
+                name="da"
+                step="1"
+                class="input input-bordered w-full"
+                required />
+            </div>
+            <div>
+              <label class="label">Gambling:</label>
+              <div class="flex items-center gap-2">
+                <button type="button" id="gamblingButton" class="btn btn-ghost">
+                  ⬜
+                </button>
+                <input
+                  type="hidden"
+                  name="gambling"
+                  id="gamblingValue"
+                  value="unchecked" />
+              </div>
+            </div>
+            <div>
+              <label class="label">Country:</label>
+              <input
+                type="text"
+                name="country"
+                class="input input-bordered w-full"
+                required />
+            </div>
+            <div>
+              <label class="label">Links:</label>
+              <input
+                type="number"
+                name="links"
+                step="1"
+                class="input input-bordered w-full"
+                required />
+            </div>
+            <div>
+              <label class="label">Gambling Price (USD):</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                name="gambling_price"
+                class="input input-bordered w-full"
+                required />
+            </div>
+            <div>
+              <label class="label">General Price (USD):</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                name="general_price"
+                class="input input-bordered w-full"
+                required />
+            </div>
+            <div>
+              <label class="label">Tab:</label>
+              <select name="tab" class="select select-bordered w-full" required>
+                <option value="brazil_portugal">Brazil &amp; Portugal</option>
+                <option value="world">World Websites</option>
+                <option value="add_links">Add Links</option>
+              </select>
             </div>
           </div>
-          <!-- Country -->
-          <div>
-            <label>Country:</label>
-            <input
-              type="text"
-              name="country"
-              class="border p-2 w-full"
-              required />
-          </div>
-          <!-- Links -->
-          <div>
-            <label>Links:</label>
-            <input
-              type="number"
-              name="links"
-              step="1"
-              class="border p-2 w-full"
-              required />
-          </div>
-          <!-- Gambling Price -->
-          <div>
-            <label>Gambling Price (USD):</label>
-            <input
-              type="number"
-              step="0.01"
-              min="0"
-              name="gambling_price"
-              class="border p-2 w-full"
-              required />
-          </div>
-          <!-- General Price -->
-          <div>
-            <label>General Price (USD):</label>
-            <input
-              type="number"
-              step="0.01"
-              min="0"
-              name="general_price"
-              class="border p-2 w-full"
-              required />
-          </div>
-          <!-- Tab (Dropdown) -->
-          <div>
-            <label>Tab:</label>
-            <select name="tab" class="border p-2 w-full" required>
-              <option value="brazil_portugal">Brazil &amp; Portugal</option>
-              <option value="world">World Websites</option>
-              <option value="add_links">Add Links</option>
-            </select>
-          </div>
+          <button type="submit" class="btn btn-success w-full">Add Link</button>
+        </form>
+        <!-- Busca -->
+        <div class="mt-4 flex gap-2">
+          <input
+            id="searchInput"
+            type="text"
+            placeholder="Search by domain"
+            class="input input-bordered w-full max-w-xs" />
+          <button onclick="searchLinks()" class="btn btn-primary">
+            Search
+          </button>
         </div>
-        <button type="submit" class="mt-4 bg-green-500 text-white px-4 py-2">
-          Add Link
-        </button>
-      </form>
+      </div>
+
+      <!-- Lista de links -->
+      <div
+        class="card bg-base-200 shadow-lg p-4 overflow-auto"
+        style="max-height: 400px">
+        <table class="table w-full">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="border">Domain</th>
+              <th class="border">D.A.</th>
+              <th class="border">Gambling</th>
+              <th class="border">Country</th>
+              <th class="border">Links</th>
+              <th class="border">Gambling Price</th>
+              <th class="border">General Price</th>
+              <th class="border">Tab</th>
+              <th class="border">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="linkTableBody">
+            <!-- Dados carregados via JavaScript -->
+          </tbody>
+        </table>
+      </div>
     </div>
+
     <script>
-      // Tri-state para o botão Gambling com emoji
+      // Tri-state para botão Gambling no form de add
       const gamblingButton = document.getElementById("gamblingButton");
       const gamblingValue = document.getElementById("gamblingValue");
-      const states = ["⬜", "✅", "❌"];
+      const states = ["unchecked", "check", "x"];
       const emojiMap = {
         unchecked: "⬜",
         check: "✅",
@@ -183,6 +160,72 @@
         gamblingValue.value = newState;
         gamblingButton.textContent = emojiMap[newState];
       });
+
+      // Função para carregar a lista de links (usada na busca do admin)
+      function loadLinks(searchTerm = "") {
+        fetch("/api/links?search=" + encodeURIComponent(searchTerm))
+          .then((response) => response.json())
+          .then((data) => {
+            const tbody = document.getElementById("linkTableBody");
+            tbody.innerHTML = "";
+            data.forEach((item) => {
+              const row = document.createElement("tr");
+              // Cria checkbox para Gambling (estático)
+              const gamblingCell = document.createElement("td");
+              const cb = document.createElement("input");
+              cb.type = "checkbox";
+              cb.disabled = true;
+              cb.dataset.state = item.gambling;
+              if (item.gambling === "check") {
+                cb.checked = true;
+              } else if (item.gambling === "x") {
+                cb.indeterminate = true;
+              }
+              gamblingCell.appendChild(cb);
+              row.innerHTML = `
+              <td class="border p-2">${item.domain}</td>
+              <td class="border p-2">${item.da}</td>
+            `;
+              row.appendChild(gamblingCell);
+              row.innerHTML += `
+              <td class="border p-2">${item.country}</td>
+              <td class="border p-2">${item.links}</td>
+              <td class="border p-2">$${item.gambling_price}</td>
+              <td class="border p-2">$${item.general_price}</td>
+              <td class="border p-2">${item.tab}</td>
+              <td class="border p-2">
+                <a href="/admin/edit/${item.id}" class="btn btn-sm btn-info mr-2">Edit</a>
+                <form action="/admin/delete/${item.id}" method="POST" class="inline-block">
+                  <button class="btn btn-sm btn-error" type="submit">Delete</button>
+                </form>
+              </td>
+            `;
+              tbody.appendChild(row);
+            });
+            // Atualiza os checkboxes
+            document
+              .querySelectorAll('input[type="checkbox"][data-state]')
+              .forEach((cb) => {
+                const state = cb.dataset.state;
+                if (state === "check") {
+                  cb.checked = true;
+                  cb.indeterminate = false;
+                } else if (state === "x") {
+                  cb.checked = false;
+                  cb.indeterminate = true;
+                } else {
+                  cb.checked = false;
+                  cb.indeterminate = false;
+                }
+              });
+          });
+      }
+      function searchLinks() {
+        const searchTerm = document.getElementById("searchInput").value;
+        loadLinks(searchTerm);
+      }
+      // Carrega inicialmente
+      loadLinks();
     </script>
   </body>
 </html>

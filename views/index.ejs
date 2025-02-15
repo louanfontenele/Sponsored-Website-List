@@ -11,33 +11,30 @@
   </head>
   <body class="bg-white text-black">
     <nav class="p-4 border-b bg-gray-100">
-      <a href="/" class="mr-4">Home</a>
-      <a href="/contact" class="mr-4">Contact</a>
-      <a href="/login">Admin</a>
+      <div class="container mx-auto flex justify-between">
+        <div>
+          <a href="/" class="mr-4 font-bold">Home</a>
+          <a href="/contact" class="mr-4">Contact</a>
+        </div>
+        <div>
+          <a href="/login" class="btn btn-sm btn-outline">Admin</a>
+        </div>
+      </div>
     </nav>
     <div class="container mx-auto p-4">
-      <h1 class="text-2xl font-bold mb-4">Website List</h1>
-      <div class="tabs mb-4">
-        <button
-          id="tab-btn-1"
-          class="tab tab-bordered tab-active"
-          onclick="activateTab('brazil_portugal', 1)">
-          Brazil &amp; Portugal
-        </button>
-        <button
-          id="tab-btn-2"
-          class="tab tab-bordered"
-          onclick="activateTab('world', 2)">
-          World Websites
-        </button>
-        <button
-          id="tab-btn-3"
-          class="tab tab-bordered"
-          onclick="activateTab('add_links', 3)">
-          Add Links
-        </button>
+      <h1 class="text-3xl font-bold mb-6">Website List</h1>
+
+      <!-- Search field -->
+      <div class="mb-4 flex gap-2">
+        <input
+          id="searchInput"
+          type="text"
+          placeholder="Search by domain"
+          class="input input-bordered w-full max-w-xs" />
+        <button onclick="searchLinks()" class="btn btn-primary">Search</button>
       </div>
-      <div id="table-container" class="overflow-x-auto">
+
+      <div class="overflow-x-auto">
         <table class="table w-full border border-gray-300">
           <thead class="bg-gray-100">
             <tr>
@@ -67,28 +64,36 @@
         </table>
       </div>
     </div>
+
     <script>
-      function activateTab(tab, index) {
-        for (let i = 1; i <= 3; i++) {
-          document
-            .getElementById("tab-btn-" + i)
-            .classList.remove("tab-active");
-        }
-        document.getElementById("tab-btn-" + index).classList.add("tab-active");
-        showTab(tab);
+      function searchLinks() {
+        const search = document.getElementById("searchInput").value;
+        // Chama a função showLinks com o termo de busca
+        showLinks(search);
       }
-      function showTab(tab) {
-        fetch("/api/links?tab=" + tab)
+      function showLinks(searchTerm = "") {
+        fetch("/api/links?search=" + encodeURIComponent(searchTerm))
           .then((response) => response.json())
           .then((data) => {
             const tbody = document.getElementById("table-body");
             tbody.innerHTML = "";
             data.forEach((item) => {
               const row = document.createElement("tr");
+              // Cria um checkbox desabilitado para Gambling, com data-state
+              const gamblingCell = document.createElement("td");
+              gamblingCell.className = "border border-gray-300";
+              const checkbox = document.createElement("input");
+              checkbox.type = "checkbox";
+              checkbox.disabled = true;
+              checkbox.className = "gambling-checkbox";
+              checkbox.dataset.state = item.gambling;
+              gamblingCell.appendChild(checkbox);
               row.innerHTML = `
               <td class="border border-gray-300"><a href="http://${item.domain}" target="_blank" class="text-blue-500">${item.domain}</a></td>
               <td class="border border-gray-300">${item.da}</td>
-              <td class="border border-gray-300">${item.gambling}</td>
+            `;
+              row.appendChild(gamblingCell);
+              row.innerHTML += `
               <td class="border border-gray-300">${item.country}</td>
               <td class="border border-gray-300">${item.links}</td>
               <td class="border border-gray-300">$${item.gambling_price}</td>
@@ -96,9 +101,25 @@
             `;
               tbody.appendChild(row);
             });
+            // Atualiza o estado dos checkboxes
+            document
+              .querySelectorAll(".gambling-checkbox")
+              .forEach((checkbox) => {
+                const state = checkbox.dataset.state;
+                if (state === "check") {
+                  checkbox.checked = true;
+                } else if (state === "x") {
+                  checkbox.checked = false;
+                  checkbox.indeterminate = true;
+                } else {
+                  checkbox.checked = false;
+                  checkbox.indeterminate = false;
+                }
+              });
           });
       }
-      activateTab("brazil_portugal", 1);
+      // Carrega inicialmente
+      showLinks();
     </script>
   </body>
 </html>

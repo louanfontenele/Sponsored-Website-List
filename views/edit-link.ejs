@@ -7,62 +7,56 @@
 </head>
 <body class="bg-white text-black">
   <nav class="p-4 border-b bg-gray-100">
-    <a href="/admin" class="mr-4">Back to Admin Panel</a>
-    <a href="/" class="mr-4">Home</a>
+    <div class="container mx-auto flex justify-between">
+      <a href="/admin" class="btn btn-sm btn-outline">Back to Admin Panel</a>
+      <a href="/" class="btn btn-sm btn-outline">Home</a>
+    </div>
   </nav>
   <div class="container mx-auto p-4">
-    <h1 class="text-2xl font-bold mb-4">Edit Link</h1>
-    <form action="/admin/edit/<%= link.id %>" method="POST" class="bg-gray-100 p-4 rounded shadow">
+    <h1 class="text-3xl font-bold mb-6">Edit Link</h1>
+    <form action="/admin/edit/<%= link.id %>" method="POST" class="space-y-4">
       <div class="grid grid-cols-2 gap-4">
-        <!-- Domain -->
         <div>
-          <label>Domain:</label>
-          <input type="text" name="domain" class="border p-2 w-full" value="<%= link.domain %>" required>
+          <label class="label">Domain:</label>
+          <input type="text" name="domain" class="input input-bordered w-full" value="<%= link.domain %>" required>
         </div>
-        <!-- D.A. -->
         <div>
-          <label>D.A.:</label>
-          <input type="number" name="da" step="1" class="border p-2 w-full" value="<%= link.da %>" required>
+          <label class="label">D.A.:</label>
+          <input type="number" name="da" step="1" class="input input-bordered w-full" value="<%= link.da %>" required>
         </div>
-        <!-- Gambling (Tri-state com emoji) -->
         <div>
-          <label>Gambling:</label>
-          <div class="flex items-center">
-            <button type="button" id="editGamblingBtn" class="bg-gray-200 px-2 py-1"></button>
+          <label class="label">Gambling:</label>
+          <div class="flex items-center gap-2">
+            <button type="button" id="editGamblingBtn" class="btn btn-ghost"></button>
             <input type="hidden" name="gambling" id="editGamblingValue" value="<%= link.gambling %>">
           </div>
         </div>
-        <!-- Country -->
         <div>
-          <label>Country:</label>
-          <input type="text" name="country" class="border p-2 w-full" value="<%= link.country %>" required>
+          <label class="label">Country:</label>
+          <input type="text" name="country" class="input input-bordered w-full" value="<%= link.country %>" required>
         </div>
-        <!-- Links -->
         <div>
-          <label>Links:</label>
-          <input type="number" name="links" step="1" class="border p-2 w-full" value="<%= link.links %>" required>
+          <label class="label">Links:</label>
+          <input type="number" name="links" step="1" class="input input-bordered w-full" value="<%= link.links %>" required>
         </div>
-        <!-- Gambling Price -->
         <div>
-          <label>Gambling Price (USD):</label>
-          <input type="number" step="0.01" min="0" name="gambling_price" class="border p-2 w-full" value="<%= link.gambling_price %>" required>
+          <label class="label">Gambling Price (USD):</label>
+          <input type="number" step="0.01" min="0" name="gambling_price" class="input input-bordered w-full" value="<%= link.gambling_price %>" required>
         </div>
-        <!-- General Price -->
         <div>
-          <label>General Price (USD):</label>
-          <input type="number" step="0.01" min="0" name="general_price" class="border p-2 w-full" value="<%= link.general_price %>" required>
+          <label class="label">General Price (USD):</label>
+          <input type="number" step="0.01" min="0" name="general_price" class="input input-bordered w-full" value="<%= link.general_price %>" required>
         </div>
-        <!-- Tab (Dropdown) -->
         <div>
-          <label>Tab:</label>
-          <select name="tab" class="border p-2 w-full" required>
+          <label class="label">Tab:</label>
+          <select name="tab" class="select select-bordered w-full" required>
             <option value="brazil_portugal" <%= link.tab === 'brazil_portugal' ? 'selected' : '' %>>Brazil &amp; Portugal</option>
             <option value="world" <%= link.tab === 'world' ? 'selected' : '' %>>World Websites</option>
             <option value="add_links" <%= link.tab === 'add_links' ? 'selected' : '' %>>Add Links</option>
           </select>
         </div>
       </div>
-      <button type="submit" class="mt-4 bg-green-500 text-white px-4 py-2">Save Changes</button>
+      <button type="submit" class="btn btn-success w-full">Save Changes</button>
     </form>
   </div>
   <script>
