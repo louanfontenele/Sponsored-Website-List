@@ -143,7 +143,6 @@ app.get("/admin", isAuthenticated, (req, res) => {
 
   db.all(sql, params, (err, rows) => {
     if (err) return res.send("Erro ao buscar links.");
-    // Passa também o 'search' para manter o texto no campo
     res.render("admin", { links: rows, search });
   });
 });
@@ -154,11 +153,11 @@ app.post("/admin/add", isAuthenticated, (req, res) => {
     domain,
     da,
     links: linksCount,
+    gambling,
     gambling_price,
     general_price,
     tab,
     country,
-    gambling,
   } = req.body;
 
   // Validações numéricas

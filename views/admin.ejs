@@ -51,7 +51,7 @@
             <td class="border border-gray-300">$<%= link.general_price %></td>
             <td class="border border-gray-300"><%= link.tab %></td>
             <td class="border border-gray-300">
-              <!-- Exemplo: remover link -->
+              <!-- Remover link -->
               <form
                 action="/admin/delete/<%= link.id %>"
                 method="POST"
@@ -60,7 +60,7 @@
                   Delete
                 </button>
               </form>
-              <!-- Botão para editar (pode implementar modal ou página separada) -->
+              <!-- Botão de edição (placeholder para implementação) -->
               <button
                 onclick="alert('Edit functionality for ID: <%= link.id %> to be implemented')"
                 class="bg-blue-500 text-white px-2 py-1">
@@ -87,7 +87,7 @@
               class="border p-2 w-full"
               required />
           </div>
-          <!-- D.A. (inteiro) -->
+          <!-- D.A. (somente números inteiros) -->
           <div>
             <label>D.A.:</label>
             <input
@@ -97,27 +97,18 @@
               class="border p-2 w-full"
               required />
           </div>
-
-          <!-- Gambling (tri-state) -->
+          <!-- Gambling (Checkbox tri-state) -->
           <div>
             <label>Gambling:</label>
             <div class="flex items-center">
-              <!-- hidden input para enviar o valor real -->
+              <input type="checkbox" id="gamblingCheckbox" />
               <input
                 type="hidden"
                 name="gambling"
-                id="gamblingInput"
+                id="gamblingValue"
                 value="unchecked" />
-              <button
-                type="button"
-                id="gamblingBtn"
-                class="bg-gray-200 px-2 py-1"
-                onclick="toggleGambling()">
-                unchecked
-              </button>
             </div>
           </div>
-
           <!-- Country -->
           <div>
             <label>Country:</label>
@@ -127,8 +118,7 @@
               class="border p-2 w-full"
               required />
           </div>
-
-          <!-- Links (inteiro) -->
+          <!-- Links (somente inteiros) -->
           <div>
             <label>Links:</label>
             <input
@@ -138,8 +128,7 @@
               class="border p-2 w-full"
               required />
           </div>
-
-          <!-- Gambling Price (decimal) -->
+          <!-- Gambling Price (números decimais) -->
           <div>
             <label>Gambling Price (USD):</label>
             <input
@@ -150,8 +139,7 @@
               class="border p-2 w-full"
               required />
           </div>
-
-          <!-- General Price (decimal) -->
+          <!-- General Price (números decimais) -->
           <div>
             <label>General Price (USD):</label>
             <input
@@ -162,8 +150,7 @@
               class="border p-2 w-full"
               required />
           </div>
-
-          <!-- Tab (dropdown) -->
+          <!-- Tab (Dropdown) -->
           <div>
             <label>Tab:</label>
             <select name="tab" class="border p-2 w-full" required>
@@ -180,15 +167,34 @@
     </div>
 
     <script>
-      // Tri-state for gambling
-      let gamblingStates = ["unchecked", "check", "x"];
-      let gamblingIndex = 0;
-      function toggleGambling() {
-        gamblingIndex = (gamblingIndex + 1) % 3;
-        const newState = gamblingStates[gamblingIndex];
-        document.getElementById("gamblingInput").value = newState;
-        document.getElementById("gamblingBtn").textContent = newState;
-      }
+      // Implementa um checkbox tri-state usando o input type="checkbox"
+      const gamblingCheckbox = document.getElementById("gamblingCheckbox");
+      const gamblingValue = document.getElementById("gamblingValue");
+      // Estado inicial: unchecked
+      gamblingCheckbox.checked = false;
+      gamblingCheckbox.indeterminate = false;
+
+      gamblingCheckbox.addEventListener("click", function (e) {
+        // Se não estiver marcado e não estiver em estado indeterminado, seta para checked ("check")
+        if (!gamblingCheckbox.checked && !gamblingCheckbox.indeterminate) {
+          gamblingCheckbox.checked = true;
+          gamblingCheckbox.indeterminate = false;
+          gamblingValue.value = "check";
+        } else if (
+          gamblingCheckbox.checked &&
+          !gamblingCheckbox.indeterminate
+        ) {
+          // Se estiver marcado, seta para indeterminado ("x")
+          gamblingCheckbox.checked = false;
+          gamblingCheckbox.indeterminate = true;
+          gamblingValue.value = "x";
+        } else {
+          // Se estiver em estado indeterminado, reseta para unchecked
+          gamblingCheckbox.checked = false;
+          gamblingCheckbox.indeterminate = false;
+          gamblingValue.value = "unchecked";
+        }
+      });
     </script>
   </body>
 </html>
