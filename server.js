@@ -32,7 +32,7 @@ db.serialize(() => {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     domain TEXT,
     da INTEGER,
-    gambling TEXT,      -- 'unchecked', 'check' ou 'x'
+    gambling TEXT,      -- '⬜', '✅' ou '❌'
     country TEXT,
     links INTEGER,
     gambling_price REAL,
